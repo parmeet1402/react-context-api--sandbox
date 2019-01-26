@@ -7,11 +7,22 @@ const MyContext = React.createContext();
 class MyProvider extends Component {
   state = {
     name: "Avi",
+    insta: "@avi.codes",
     age: 20
   };
   render() {
     return (
-      <MyContext.Provider value="abc">{this.props.children}</MyContext.Provider>
+      <MyContext.Provider
+        value={{
+          state: this.state,
+          growYearOlder: () =>
+            this.setState({
+              age: this.state.age + 1
+            })
+        }}
+      >
+        {this.props.children}
+      </MyContext.Provider>
     );
   }
 }
@@ -26,7 +37,16 @@ class Person extends Component {
   render() {
     return (
       <div className="person">
-        <p>I'm {this.props.name}</p>
+        <MyContext.Consumer>
+          {context => (
+            <React.Fragment>
+              <p>I'm {context.state.name}</p>
+              <p>I'm {context.state.age}</p>
+              <p>Follow {context.state.insta} on Instagram</p>
+              <button onClick={context.growYearOlder}>Age++</button>
+            </React.Fragment>
+          )}
+        </MyContext.Consumer>
       </div>
     );
   }
@@ -37,7 +57,6 @@ class App extends Component {
     return (
       <MyProvider>
         <div>
-          <p>I'm the react app</p>
           <Family />
         </div>
       </MyProvider>
